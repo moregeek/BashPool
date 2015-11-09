@@ -1,0 +1,20 @@
+#!/usr/local/env bash
+
+#
+# tfp - prints true/false depending on return code of previously executed application
+#
+# Example:
+#
+#   $ demo="demo"; test -z $demo; tfp;          # => false
+#   $ demo=""; test -z $demo; tfp;              # => true
+#   $ ls -ald /superduper 2> /dev/null; tfp     # => false
+#
+#
+
+function tfp () {
+  local rc=$?
+
+  if [ $rc -eq 0 ]; then echo true; else echo false; fi;
+
+  return $rc
+}

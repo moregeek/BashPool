@@ -7,6 +7,7 @@ Bashpool, a collection of scripts "grown" over the past few years and are worth 
 | name         | sourceable | executable |          description         |
 |:-------------|:----------:|:----------:|------------------------------|
 | cfg          |    yes     |     yes    | ensure a specific state of user inputs such as variables and config files |
+| tfp          |    yes     |     no     | prints true/false depending on return code of previously executed application |
 
 ### cfg ###
 
@@ -39,6 +40,14 @@ Bashpool, a collection of scripts "grown" over the past few years and are worth 
       # => /home/default
     
       YOURVAR=$(cfg "^(true|false)$" "true" "YOURVAR")
+
+### tfp ###
+
+    source tfp
+    
+    demo="demo"; test -z $demo; tfp;          # => false
+    demo=""; test -z $demo; tfp;              # => true
+    ls -ald /superduper 2> /dev/null; tfp     # => false
 
 ## License ##
 

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+testTfp () {
+  source ../tfp
+
+  assertFalse 'should return false (variable not empty)' $(demo="demo"; test -z $demo; tfp;)
+  assertTrue  'should return true (variable emptry)' $(demo=""; test -z $demo; tfp;)
+  assertFalse 'should return false (path not valid)' $(ls -ald /superduper 2> /dev/null; tfp;)   
+}
