@@ -6,7 +6,7 @@ testSourceMode () {
   type -t cfg
   assertFalse 'should not find cfg as function' $?
   
-  source cfg
+  source ../cfg
   assertTrue 'should find cfg declared as function' $?
 }
 
@@ -21,7 +21,7 @@ testExecMode () {
 }
 
 testCfg () {
-  source cfg
+  source ../cfg
 
   assertEquals "should match '/home/coffee'" '/home/coffee' \
     $(HOME=/home/coffee cfg "^/home/[a-z]+$" "/home/default" "HOME")

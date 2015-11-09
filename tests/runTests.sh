@@ -18,4 +18,8 @@ suite () {
   done
 }
 
+setUp () {
+  cd ${BASEDIR}/tests
+}
+
 source tmp/shunit2/src/shunit2
