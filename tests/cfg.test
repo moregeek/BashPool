@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+CFG_CONFIG_FILE="${BASEDIR}/tmp/cfg.conf"
+
+testSourceMode () {
+  type -t cfg
+  assertFalse 'should not find cfg as function' $?
+  
+  source cfg
+  assertTrue 'should find cfg declared as function' $?
+}
+
+testExecMode () {
+  which cfg > /dev/null 2>&1
+  assertFalse 'should not find cfg executable (not in PATH)' $?
+
+  PATH="${PATH}:${BASEDIR}" which cfg > /dev/null 2>&1
+  assertTrue 'should find cfg executable (in PATH)' $?
+
+  assertFalse 'should fail if not arguments supplied' $(PATH="${PATH}:${BASEDIR}" cfg)
+}
+
+testCfg () {
+  source cfg
+
+  assertEquals "should match '/home/coffee'" '/home/coffee' \
+    $(HOME=/home/coffee cfg "^/home/[a-z]+$" "/home/default" "HOME")
+
+  assertEquals "should match '/home/default'" '/home/default' \
+    $(HOME="" cfg "^/home/[a-z]+$" "/home/default" "HOME")
+
+  assertTrue "should return true" \
+    $(cfg "^(true|false)$" "true" "toggle_flag")
+
+  assertFalse "should return false" \
+    $(toggle_flag=false cfg "^(true|false)$" "true" "toggle_flag")
+
+  # add config file value
+  echo "toggle_flag=false" > ${CFG_CONFIG_FILE}
+  assertFalse "should return false" $(cfg "^(true|false)$" "true" "toggle_flag")
+}

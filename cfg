@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+#
+#   Copyright (C) 2015 Stefan Morgenthaler
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+#   cfg is part of: https://github.com/moregeek/bashpool
+# 
+
+function cfg () {
+  local config_validation="$1" \
+    config_default="$2" \
+    config_var="$3"
+
+  # defaults
+  : ${cfgs:=${cfgs}}
+  : ${cfgs:=true}
+
+  # override me
+  : ${CFG_CONFIG_FILE:=${HOME}/cfg.conf}
+  
+  if [ -z "${!config_var}" ] && [ ${cfgs} ] && [ -f ${CFG_CONFIG_FILE} ];  then
+
+    source ${CFG_CONFIG_FILE} \
+      && cfgs=false cfg "${config_validation}" "${config_default}" "${config_var}" \
+      || echo "Syntax error in your configuration file: '$CFG_CONFIG_FILE}'" >&2; return 1
+
+  else
+
+    if [ -n "${!config_var}" ]; then
+      if [[ ${!config_var} =~ ${config_validation} ]]; then
+        echo ${BASH_REMATCH}    # returns valid match
+      else
+        echo ${config_default}  
+      fi
+    else # variable absent
+      echo ${config_default}
+    fi
+
+  fi
+}
+
+#
+# run only if executed
+#
+if [[ $_ == $0 ]]; then
+
+  if [[ $1 =~ ^(-h|--help)$ ]]; then
+
+    echo 'cfg ensure a specific state of user inputs such as variables and config files.'
+    echo
+    echo 'Available options: (execute only)'
+    echo '  -h|--help     show this help text'
+    echo
+    echo 'You have two options to use cfg. The first is to source this script'
+    echo 'and make the cfg function available to your shell script (shell dependent).'
+    echo 'The second option is to modifiy your PATH to point to the location of'
+    echo 'this script and execute it manually (shell independent).'
+    echo
+    echo 'The location of the configuration file is read from the environment variable'
+    echo 'CFG_CONFIG_FILE. If not set the default configuration file is loaded if'
+    echo 'present (~/cfg.conf).'
+    echo
+    echo 'NOTE: Take extra care on the permissions of your configuration file ase there'
+    echo '      is no >bad behaviour< check. (yet!)'
+    echo 
+    echo 'usage:'
+    echo
+    echo '  cfg "^/home/[a-z]+$" "/home/default" "HOME"'
+    echo '  # => /home/coffee'
+    echo
+    echo '  HOME=/home/mate cfg "^/home/[a-z]+$" "/home/default" "HOME"'
+    echo '  # => /home/mate'
+    echo
+    echo '  HOME="" cfg "^/home/[a-z]+$" "/home/default" "HOME"'
+    echo '  # => /home/default'
+    echo
+    echo '  YOURVAR=$(cfg "^(true|false)$" "true" "YOURVAR")'
+    echo
+
+    exit 0
+
+  elif [[ ! $# -eq 3 ]]; then
+
+    echo -e 'cfg: missing parameters!\ntry: cfg --help for mor information' >&2
+    exit 1
+
+  fi
+
+  cfg "$1" "$2" "$3"
+fi
