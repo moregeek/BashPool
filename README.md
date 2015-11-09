@@ -1,5 +1,8 @@
 # bashpool #
 
+[![Build Status](https://travis-ci.org/moregeek/BashPool.svg)](https://travis-ci.org/moregeek/BashPool)
+
+
 Bashpool, a collection of scripts "grown" over the past few years and are worth (IMHO) to share with you folks.
 
 ## Scripts Overview ##
